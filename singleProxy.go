@@ -17,7 +17,11 @@ type SingleProxy struct {
 // New returns a simpleProxy
 func (p *SingleProxy) New(target string, debug bool) *SingleProxy {
 	url, _ := url.Parse(target)
-	return &SingleProxy{target: url, proxy: httputil.NewSingleHostReverseProxy(url), debug: debug}
+	proxy := &SingleProxy{target: url, proxy: httputil.NewSingleHostReverseProxy(url), debug: debug}
+	if proxy.proxy == nil {
+		log.Panic("Returned nil proxy")
+	}
+	return proxy
 }
 
 func (p *SingleProxy) handle(w http.ResponseWriter, r *http.Request) {
