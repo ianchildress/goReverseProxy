@@ -2,6 +2,7 @@
 // target server and return the unmodified response to the client.
 package main
 
+/*
 import (
 	"flag"
 	"fmt"
@@ -48,4 +49,27 @@ func NewReverseProxy(target *url.URL) *httputil.ReverseProxy {
 		req.URL.Path = target.Path
 	}
 	return &httputil.ReverseProxy{Director: director}
+}
+*/
+
+import (
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+)
+
+func report(r *http.Request) {
+	r.Host = "stackoverflow.com"
+	r.URL.Host = r.Host
+	r.URL.Scheme = "http"
+}
+
+func main() {
+	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+		Scheme: "http",
+		Host:   "localhost:4567",
+	})
+	proxy.Director = report
+	http.Handle("/", proxy)
+	http.ListenAndServe(":80", nil)
 }
